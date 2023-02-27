@@ -1,19 +1,19 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { useDrag, usePinch } from '@use-gesture/react'
 
-const CanvasControlsContext = React.createContext();
+const FilterZoomContext = React.createContext();
 
-export const useCanvasControls = () => {
-  const context = React.useContext(CanvasControlsContext);
+export const useFilterZoom = () => {
+  const context = React.useContext(FilterZoomContext);
 
   if (context === undefined) {
-    throw new Error('useCanvasControls must be used within a CanvasControlsProvider');
+    throw new Error('useFilterZoom must be used within a FilterZoomProvider');
   }
 
   return context;
 }
 
-export const CanvasControlsProvider = ({ children }) => {
+export const FilterZoomProvider = ({ children }) => {
   const [canMove, setCanMove] = useState(false)
   const [dragMove, setDragMove] = useState([0, 0])
   const [move, setMove] = useState([0, 0])
@@ -23,6 +23,10 @@ export const CanvasControlsProvider = ({ children }) => {
 
   const pointerMove = useDrag(({delta: [x, y]}) => setDragMove([x, y]), {target: canvasRef})
   const zoomMove = usePinch(({offset: [scale, angle]}) => setZoom(scale), {target: canvasRef, from: () => [zoom, 0]})
+  
+  useEffect(() => {
+    if(zoom < 0.5) setZoom(0.5)
+  }, [zoom])
   
   useEffect(() => {
     if(camera) setMove([camera.position.x - (dragMove[0]/zoom), camera.position.y + (dragMove[1]/zoom)])
@@ -48,5 +52,5 @@ export const CanvasControlsProvider = ({ children }) => {
     setZoom
   }
   
-  return <CanvasControlsContext.Provider value={providerData}>{children}</CanvasControlsContext.Provider>;
+  return <FilterZoomContext.Provider value={providerData}>{children}</FilterZoomContext.Provider>;
 };
