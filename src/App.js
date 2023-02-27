@@ -15,21 +15,23 @@ function PhoneImage({ x, y }) {
   const [stateY, setStateY] = useState(y)
   const [_x, _y, z] = positionTranslator(stateX, stateY)
 
-  const {setMove, setZoom, enabled, movePositioner, canvasRef} = useFilterZoom()
+  const {setMove, setZoom, enabled, zoom, canvasRef} = useFilterZoom()
 
   const click = useCallback(() => {
-    console.log(canvasRef.current)
     if(enabled) {
       setMove([_x, _y])
-      const zoom = Math.min(canvasRef.current.clientHeight/(100 + 30), canvasRef.current.clientWidth/(100 + 30))
-      setZoom(zoom)
+      const newZoom = Math.min(canvasRef.current.clientHeight/(100 + 30), canvasRef.current.clientWidth/(100 + 30))
+      setZoom(newZoom)
     }
-  }, [canvasRef])
+  }, [enabled, canvasRef])
   
   const bind = useDrag(({delta}) => { 
     if(!enabled){
-      const [newX, newY] = movePositioner(delta)
-      setStateX(stateX - newX)
+      console.log(delta)
+      const [newX, newY] =  [delta[0]/zoom, delta[1]/zoom]
+      console.log(stateX, newX)
+      console.log(stateY, newY)
+      setStateX(stateX + newX)
       setStateY(stateY + newY)
     }
   })

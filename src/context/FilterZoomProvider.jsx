@@ -31,17 +31,17 @@ export const FilterZoomProvider = ({ children }) => {
   }, [zoom])
   
   const movePositioner = useCallback(([x, y]) => {
+    console.log(camera && camera.position, zoom)
     if(camera)
       return [camera.position.x - (x/zoom), camera.position.y + (y/zoom)]
     return [x, y]
-  }, [camera, zoom])
+  }, [camera && camera.position, zoom])
   
   useEffect(() => {
     if(camera) setMove(movePositioner(dragMove))
   }, [dragMove, camera])
   
   useEffect(() => { 
-    console.log(move, zoom)
     if(camera){
       camera.position.set(move[0], move[1], 5)
       camera.rotation.set(0, 0, 0)
