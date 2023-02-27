@@ -1,22 +1,38 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {useThree, useFrame } from "@react-three/fiber";
 import { Image, Html} from "@react-three/drei";
 import { useFilterZoom, FilterZoomProvider} from "./context/FilterZoomProvider";
 import FiberZoomContainer from "./components/FiberZoomContainer";
+import { useDrag } from '@use-gesture/react'
 
 function positionTranslator(x, y) {
   return [-300 + x + 50, 200 - y - 50, 1];
 }
 
 function PhoneImage({ x, y }) {
-  const [_x, _y, z] = positionTranslator(x, y)
-  const {setMove, setZoom} = useFilterZoom()
+  const [stateX, setStateX] = useState(x)
+  const [stateY, setStateY] = useState(y)
+  const [_x, _y, z] = positionTranslator(stateX, stateY)
 
-  const click = () => {
-    setMove([_x, _y])
-    setZoom(window.innerHeight/(100 + 30))
-  }
+  const {setMove, setZoom, enabled, movePositioner, canvasRef} = useFilterZoom()
+
+  const click = useCallback(() => {
+    console.log(canvasRef.current)
+    if(enabled) {
+      setMove([_x, _y])
+      const zoom = Math.min(canvasRef.current.clientHeight/(100 + 30), canvasRef.current.clientWidth/(100 + 30))
+      setZoom(zoom)
+    }
+  }, [canvasRef])
+  
+  const bind = useDrag(({delta}) => { 
+    if(!enabled){
+      const [newX, newY] = movePositioner(delta)
+      setStateX(stateX - newX)
+      setStateY(stateY + newY)
+    }
+  })
 
   return (
     <>
@@ -31,6 +47,7 @@ function PhoneImage({ x, y }) {
         position={[_x, _y, z]}
         scale={[100, 100, 1]}
         onClick={click}
+        {...bind()}
         url={
           "https://media.istockphoto.com/photos/mobile-phone-top-view-with-white-screen-picture-id1161116588?k=20&m=1161116588&s=612x612&w=0&h=NKv_O5xQecCHZic53onobxjqGfW7I-D-tBrzXaPbj_Q="
         }
@@ -67,12 +84,13 @@ function Test() {
 }
 
 function TestControls() {
-  const {zoom, setZoom} = useFilterZoom();
+  const {zoom, setZoom, setEnabled, enabled} = useFilterZoom();
 
   return(
     <div>
       <button onClick={() => setZoom(zoom+1)}>Zoom In</button>
       <button onClick={() => setZoom(zoom-1)}>Zoom Out</button>
+      <button onClick={() => setEnabled(!enabled)}>{enabled ? "Edit Mode" : "View Mode"}</button>
     </div>
   )
 }

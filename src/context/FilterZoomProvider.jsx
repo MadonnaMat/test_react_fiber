@@ -19,18 +19,25 @@ export const FilterZoomProvider = ({ children }) => {
   const [move, setMove] = useState([0, 0])
   const [zoom, setZoom] = useState(1)
   const [camera, setCamera] = useState()
+  const [enabled, setEnabled] = useState(true)
   const canvasRef = useRef()
 
-  const pointerMove = useDrag(({delta: [x, y]}) => setDragMove([x, y]), {target: canvasRef})
-  const zoomMove = usePinch(({offset: [scale, angle]}) => setZoom(scale), 
+  const pointerMove = useDrag(({delta: [x, y]}) => enabled && setDragMove([x, y]), {target: canvasRef})
+  const zoomMove = usePinch(({offset: [scale, angle]}) => enabled && setZoom(scale), 
     {target: canvasRef, from: () => [zoom, 0], modifierKey: null})
   
   useEffect(() => {
     if(zoom < 0.5) setZoom(0.5)
   }, [zoom])
   
+  const movePositioner = useCallback(([x, y]) => {
+    if(camera)
+      return [camera.position.x - (x/zoom), camera.position.y + (y/zoom)]
+    return [x, y]
+  }, [camera, zoom])
+  
   useEffect(() => {
-    if(camera) setMove([camera.position.x - (dragMove[0]/zoom), camera.position.y + (dragMove[1]/zoom)])
+    if(camera) setMove(movePositioner(dragMove))
   }, [dragMove, camera])
   
   useEffect(() => { 
@@ -50,6 +57,9 @@ export const FilterZoomProvider = ({ children }) => {
     move,
     zoom,
     setMove,
+    setEnabled,
+    enabled,
+    movePositioner,
     setZoom
   }
   
