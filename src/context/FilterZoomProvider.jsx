@@ -22,7 +22,8 @@ export const FilterZoomProvider = ({ children }) => {
   const canvasRef = useRef()
 
   const pointerMove = useDrag(({delta: [x, y]}) => setDragMove([x, y]), {target: canvasRef})
-  const zoomMove = usePinch(({offset: [scale, angle]}) => setZoom(scale), {target: canvasRef, from: () => [zoom, 0]})
+  const zoomMove = usePinch(({offset: [scale, angle]}) => setZoom(scale), 
+    {target: canvasRef, from: () => [zoom, 0], modifierKey: null})
   
   useEffect(() => {
     if(zoom < 0.5) setZoom(0.5)
