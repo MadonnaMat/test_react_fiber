@@ -1,19 +1,19 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { useDrag, usePinch } from '@use-gesture/react'
 
-const FilterZoomContext = React.createContext();
+const FiberZoomContext = React.createContext();
 
-export const useFilterZoom = () => {
-  const context = React.useContext(FilterZoomContext);
+export const useFiberZoom = () => {
+  const context = React.useContext(FiberZoomContext);
 
   if (context === undefined) {
-    throw new Error('useFilterZoom must be used within a FilterZoomProvider');
+    throw new Error('useFiberZoom must be used within a FiberZoomProvider');
   }
 
   return context;
 }
 
-export const FilterZoomProvider = ({ children }) => {
+export const FiberZoomProvider = ({ children }) => {
   const [canMove, setCanMove] = useState(false)
   const [dragMove, setDragMove] = useState([0, 0])
   const [move, setMove] = useState([0, 0])
@@ -63,5 +63,5 @@ export const FilterZoomProvider = ({ children }) => {
     setZoom
   }
   
-  return <FilterZoomContext.Provider value={providerData}>{children}</FilterZoomContext.Provider>;
+  return <FiberZoomContext.Provider value={providerData}>{children}</FiberZoomContext.Provider>;
 };

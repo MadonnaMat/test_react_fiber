@@ -1,4 +1,4 @@
-import { useFilterZoom} from "../context/FilterZoomProvider"
+import { useFiberZoom} from "../context/FiberZoomProvider"
 import { Suspense, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Center } from "@react-three/drei";
@@ -14,7 +14,7 @@ function CenterObj({children}) {
   
 function CanvasControls({children }) {
     const camera = useThree(({ camera }) => camera)
-    const {setCamera} = useFilterZoom()
+    const {setCamera} = useFiberZoom()
     
     useEffect(() => {
       setCamera(camera)
@@ -23,7 +23,7 @@ function CanvasControls({children }) {
   }
   
   function CanvasBody({style, children}){
-    const {canvasRef} = useFilterZoom();
+    const {canvasRef} = useFiberZoom();
   
     return (<div
         id="canvas-container"

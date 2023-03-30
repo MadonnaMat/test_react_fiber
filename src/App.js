@@ -2,7 +2,7 @@ import "./App.css";
 import { useState, useCallback } from "react";
 import {useThree, useFrame } from "@react-three/fiber";
 import { Image, Html} from "@react-three/drei";
-import { useFilterZoom, FilterZoomProvider} from "./context/FilterZoomProvider";
+import { useFiberZoom, FiberZoomProvider} from "./context/FiberZoomProvider";
 import FiberZoomContainer from "./components/FiberZoomContainer";
 import { useDrag } from '@use-gesture/react'
 
@@ -15,7 +15,7 @@ function PhoneImage({ x, y }) {
   const [stateY, setStateY] = useState(y)
   const [_x, _y, z] = positionTranslator(stateX, stateY)
 
-  const {setMove, setZoom, enabled, zoom, canvasRef} = useFilterZoom()
+  const {setMove, setZoom, enabled, zoom, canvasRef} = useFiberZoom()
 
   const click = useCallback(() => {
     if(enabled) {
@@ -86,7 +86,7 @@ function Test() {
 }
 
 function TestControls() {
-  const {zoom, setZoom, setEnabled, enabled} = useFilterZoom();
+  const {zoom, setZoom, setEnabled, enabled} = useFiberZoom();
 
   return(
     <div>
@@ -99,7 +99,7 @@ function TestControls() {
 
 function App() {
   return (
-    <FilterZoomProvider>
+    <FiberZoomProvider>
       <TestControls />
       <FiberZoomContainer style={{width: '100vw', height: '100vh'}}>
         <Test/>
@@ -117,7 +117,7 @@ function App() {
         <PhoneImage x={150} y={200} />
         <PhoneImage x={300} y={200} />
       </FiberZoomContainer>
-    </FilterZoomProvider>
+    </FiberZoomProvider>
   );
 }
 
